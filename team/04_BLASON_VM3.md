@@ -38,7 +38,7 @@ If you dual-boot Ubuntu instead of using a VM, that's fine too. Boot into Ubuntu
 ## B2. Install Java and Kafka (do this right now, no waiting)
 
 ```bash
-sudo apt update && sudo apt install -y openjdk-17-jdk curl netcat-openbsd
+sudo apt update && sudo apt install -y openjdk-11-jdk curl netcat-openbsd
 java -version          # must mention 17
 cd ~
 wget https://archive.apache.org/dist/kafka/3.9.1/kafka_2.13-3.9.1.tgz

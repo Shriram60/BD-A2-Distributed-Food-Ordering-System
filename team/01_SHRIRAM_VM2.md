@@ -36,7 +36,7 @@ You own the network and the Kafka cluster, you are the critical path for everyon
 ### S2. Set up VM2 (in parallel with everyone else's installs)
 
 ```bash
-sudo apt update && sudo apt install -y openjdk-17-jdk python3-venv curl
+sudo apt update && sudo apt install -y openjdk-11-jdk python3-venv curl
 cd ~ && wget https://archive.apache.org/dist/kafka/3.9.1/kafka_2.13-3.9.1.tgz
 tar -xzf kafka_2.13-3.9.1.tgz && mv kafka_2.13-3.9.1 kafka
 curl -s https://install.zerotier.com | sudo bash

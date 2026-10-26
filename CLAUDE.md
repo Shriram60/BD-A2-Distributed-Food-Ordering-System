@@ -34,11 +34,11 @@ Each person edits only their own folders. That alone removes merge conflicts. Ea
 | Item | Value |
 |---|---|
 | OS | Ubuntu 22.04 or 24.04 |
-| Java | OpenJDK 17: `sudo apt install -y openjdk-17-jdk` |
+| Java | OpenJDK 11: `sudo apt install -y openjdk-11-jdk` |
 | Kafka | **3.9.1**, Scala 2.13, KRaft mode, extracted to `~/kafka` |
 | Kafka download | `https://archive.apache.org/dist/kafka/3.9.1/kafka_2.13-3.9.1.tgz` |
-| Python | 3.10+, venv at `~/bd-a2/.venv` |
-| Python packages | `confluent-kafka`, `pyspark>=4.0,<4.1` |
+| Python | 3.10 (Spark 3.3.4 supports 3.7–3.10, not 3.11+), venv at `~/bd-a2/.venv` |
+| Python packages | `confluent-kafka`, `pyspark==3.3.4` |
 | Spark | Local mode `local[*]`, launched from Python. **No HDFS, no Spark cluster, no Spark–Kafka connector.** |
 | Spark settings (every job) | `spark.sql.session.timeZone=UTC`, `spark.sql.ansi.enabled=false`, `spark.sql.jsonGenerator.ignoreNullFields=false` |
 | Network | ZeroTier, one network created by Shriram |
@@ -49,7 +49,7 @@ Each person edits only their own folders. That alone removes merge conflicts. Ea
 - Brokers must not sleep. Start them wrapped in `systemd-inhibit --what=sleep:idle:handle-lid-switch ...`, so the laptop won't suspend, even with the lid closed, while the broker runs.
 - Ask the TA to confirm that physical machines count as the "4 VMs" (question 6 in Shriram's TA message).
 
-Why `ansi.enabled=false`: Spark 4 turns ANSI mode on by default. With it on, casting a bad string like `"abc"` to a number crashes the job instead of returning null. We need invalid values to become null so we can drop them.
+Why `ansi.enabled=false`: with ANSI mode on, casting a bad string like `"abc"` to a number crashes the job instead of returning null. Spark 3.3 keeps it off by default, but we set it explicitly so invalid values always become null and we can drop them, no matter whose Spark build runs it.
 
 VM2 and VM3 need the Kafka tarball to run brokers. VM1 and VM4 only need Java and Python, since PySpark needs Java. Extracting Kafka on VM1 and VM4 as well is optional but handy for the CLI debug tools.
 
@@ -167,7 +167,7 @@ These are the defaults we code to now. Shriram confirms them with the TA. If the
 bd-a2/
 ├── CLAUDE.md                 ← this file
 ├── team/                     ← the 4 per-person MD files
-├── requirements.txt          ← confluent-kafka, pyspark>=4.0,<4.1
+├── requirements.txt          ← confluent-kafka, pyspark==3.3.4
 ├── .gitignore                ← data/, output/, stats/, .venv/, spark-warehouse/, *.log, metastore_db/
 ├── config/                   (Shriram)
 │   ├── vm2.properties
@@ -227,7 +227,7 @@ Monty     M1 M5 ───► M2 producer1 ► M3 consumer2 ► M4 Spark Job 2 (+
 | S10 | Shriram | Run the failure test with Blason | S9 | B8 |
 | S11 | Shriram | Final review and commits | everything | — |
 | B1 | Blason | Install ZeroTier, join the network, send node ID and IP | S1 | S3 |
-| B2 | Blason | Install Java 17 and download Kafka | — | B4 |
+| B2 | Blason | Install Java 11 and download Kafka | — | B4 |
 | B3 | Blason | Receive `vm3.properties` and the Cluster ID | S4 | B4 |
 | B4 | Blason | Format storage and start broker 2 | B2, B3, S5 | B5 |
 | B5 | Blason | Confirm broker started, tell Shriram | B4 | S6 |
@@ -318,12 +318,12 @@ If you have no Docker, follow the single-node KRaft quickstart in the Kafka 3.9 
 ## 12. Common environment setup (Arnav, Monty, Shriram)
 
 ```bash
-sudo apt update && sudo apt install -y openjdk-17-jdk python3-venv python3-pip curl
+sudo apt update && sudo apt install -y openjdk-11-jdk python3-venv python3-pip curl
 mkdir -p ~/bd-a2/{data,output,stats}
 cd ~/bd-a2            # the cloned repo
-python3 -m venv .venv && source .venv/bin/activate
+python3.10 -m venv .venv && source .venv/bin/activate   # Spark 3.3.4 needs Python 3.10, not 3.11/3.12
 pip install -r requirements.txt
-java -version         # must say 17
+java -version         # must say 11
 python -c "import pyspark, confluent_kafka; print(pyspark.__version__)"
 ```
 
