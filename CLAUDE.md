@@ -61,7 +61,7 @@ VM2 and VM3 need the Kafka tarball to run brokers. VM1 and VM4 only need Java an
 |---|---|---|---|
 | VM1 | Monty | `ZT_VM1 = 10.113.232.224` | none |
 | VM2 | Shriram | `ZT_VM2 = 10.113.232.128` | 9092 (broker), 9093 (controller) |
-| VM3 | Blason | `ZT_VM3 = ___.___.___.___` | 9092 (broker) |
+| VM3 | Blason | `ZT_VM3 = 10.113.232.74` | 9092 (broker) |
 | VM4 | Arnav | `ZT_VM4 = 10.113.232.70` | none |
 
 - **ZeroTier Network ID:** `3b19b3a71682751e`

@@ -10,7 +10,7 @@
 # an empty KAFKA_BOOTSTRAP like ":9092,:9092".
 export ZT_VM1="${ZT_VM1:-10.113.232.224}"   # Monty   (VM1)
 export ZT_VM2="${ZT_VM2:-10.113.232.128}"   # Shriram (VM2) — this machine
-export ZT_VM3="${ZT_VM3:-SET_ZT_VM3}"   # Blason  (VM3)
+export ZT_VM3="${ZT_VM3:-10.113.232.74}"   # Blason  (VM3)
 export ZT_VM4="${ZT_VM4:-10.113.232.70}"   # Arnav   (VM4)
 
 # Kafka install location (per the shared contract §2).
