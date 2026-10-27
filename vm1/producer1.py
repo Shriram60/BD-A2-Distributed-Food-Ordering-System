@@ -3,7 +3,10 @@
 Lines are sent as-is, malformed ones included; Spark Job 1 does the cleaning.
 Only blank / whitespace-only lines are skipped, since they are not records.
 
-Usage: python vm1/producer1.py [--input PATH]
+Usage: python vm1/producer1.py [--input PATH | --file PATH] [--delay SECONDS]
+
+--delay sleeps between sends so a broker can be stopped mid-stream (failure test);
+with a delay, each delivery is printed as it is acknowledged.
 """
 import argparse
 import json
@@ -34,8 +37,12 @@ def key_for(line):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--input", default=str(DEFAULT_INPUT))
+    parser.add_argument("--input", "--file", dest="input", default=str(DEFAULT_INPUT))
+    parser.add_argument("--delay", type=float, default=0.0,
+                        help="seconds to sleep between sends (default 0)")
     args = parser.parse_args()
+    if args.delay < 0:
+        parser.error("--delay must be >= 0")
 
     bootstrap = os.environ.get("KAFKA_BOOTSTRAP", "localhost:9092")
     producer = Producer({
@@ -51,8 +58,14 @@ def main():
     def on_delivery(err, msg):
         if err is not None:
             failures.append(str(err))
+            if args.delay:
+                print(f"  FAILED: {err}", flush=True)
         else:
             per_partition[msg.partition()] += 1
+            if args.delay:
+                key = msg.key().decode("utf-8", errors="replace") if msg.key() else None
+                print(f"  delivered key={key} partition={msg.partition()} "
+                      f"offset={msg.offset()}", flush=True)
 
     attempted = skipped_blank = unkeyed = 0
     start = time.time()
@@ -74,6 +87,9 @@ def main():
                     producer.poll(0.5)  # local queue full: let deliveries drain, then retry
             attempted += 1
             producer.poll(0)
+            if args.delay:
+                time.sleep(args.delay)
+                producer.poll(0)  # report deliveries that completed during the sleep
 
     remaining = producer.flush(60)
     if remaining:
@@ -87,6 +103,7 @@ def main():
         "topic": TOPIC,
         "bootstrap": bootstrap,
         "input": args.input,
+        "delay_sec": args.delay,
         "attempted": attempted,
         "sent": sent,
         "skipped_blank": skipped_blank,
