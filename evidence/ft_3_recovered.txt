@@ -1,0 +1,11 @@
+=== describe: orders ===
+Topic: orders	TopicId: qrIxpwhlTHmjafFT4vfRjw	PartitionCount: 2	ReplicationFactor: 2	Configs: min.insync.replicas=1
+	Topic: orders	Partition: 0	Leader: 1	Replicas: 1,2	Isr: 1,2	Elr: 	LastKnownElr: 
+	Topic: orders	Partition: 1	Leader: 1	Replicas: 2,1	Isr: 1,2	Elr: 	LastKnownElr: 
+
+=== describe: order_metrics ===
+Topic: order_metrics	TopicId: 9icI4bTuQmWuDzS72tgKrA	PartitionCount: 2	ReplicationFactor: 2	Configs: min.insync.replicas=1
+	Topic: order_metrics	Partition: 0	Leader: 1	Replicas: 2,1	Isr: 1,2	Elr: 	LastKnownElr: 
+	Topic: order_metrics	Partition: 1	Leader: 1	Replicas: 1,2	Isr: 1,2	Elr: 	LastKnownElr: 
+
+ISR recovered: no under-replicated partitions.
